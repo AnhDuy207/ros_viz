@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   visualization_msgs
+  roslaunch
 )
 
 catkin_package(
@@ -21,13 +22,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ros_viz.cpp
-# )
-# target_link_libraries(${PROJECT_NAME}
-#   ${catkin_LIBRARIES}
-# )
+roslaunch_add_file_check(launch)
 
 add_executable(marker_node src/marker.cpp)
 
