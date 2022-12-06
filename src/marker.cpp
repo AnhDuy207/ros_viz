@@ -1,12 +1,19 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Odometry.h>
 
 geometry_msgs::PoseStamped current_pose, set_point, target;
+nav_msgs::Odometry current_odom;
 geometry_msgs::Point p, sp, t;
 void pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     current_pose = *msg;
+}
+void odom_cb(const nav_msgs::Odometry::ConstPtr &msg)
+{
+    current_odom = *msg;
+    std::cout << current_odom << std::endl;
 }
 void setpoint_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
@@ -23,6 +30,7 @@ int main( int argc, char** argv )
     ros::NodeHandle nh;
 
     ros::Subscriber local_pose_sub = nh.subscribe<geometry_msgs::PoseStamped>("/mavros/local_position/pose", 100, pose_cb);
+    ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("/mavros/local_position/odom", 100, odom_cb);
     ros::Subscriber set_point_sub = nh.subscribe<geometry_msgs::PoseStamped>("/mavros/setpoint_position/local", 100, setpoint_cb);
     ros::Subscriber target_sub = nh.subscribe<geometry_msgs::PoseStamped>("/target_position", 100, target_cb);
     ros::Publisher marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 100);
@@ -77,7 +85,8 @@ int main( int argc, char** argv )
     target_ls.lifetime = ros::Duration();
     while (ros::ok())
     {
-        p = current_pose.pose.position;
+        //p = current_pose.pose.position;
+        p = current_odom.pose.pose.position;
         sp = set_point.pose.position;
         t = target.pose.position;
         // line_strip.points.push_back(p);
